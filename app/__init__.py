@@ -21,3 +21,5 @@ login_manager.login_view = "login"
 @login_manager.user_loader
 def load_user(id):
     return models.User.query.get(int(id))
+    
+from app import admin

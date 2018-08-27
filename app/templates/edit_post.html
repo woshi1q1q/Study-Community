@@ -1,28 +1,18 @@
 {% extends "base.html" %}
+
+<!DOCTYPE HTML>
 <html>
 
 <head>
   <title>
   {% block title %}
-  {{ detail.title }}
+  修改-{{ data.title }}
   {% endblock %}
   </title>
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <link rel="stylesheet" type="text/css" href="/static/css/style1.css" title="style" />
-  <script>
-    var txt = document.getElementById('txt')
-    var btn = document.getElementById('btn')
-    var desc = document.getElementById('desc')
-    btn.onclick = function () {
-        var val = txt.value
-        val = val.replace(/\r\n/g, '<br/>');
-        val = val.replace(/\n/g, '<br/>'); 
-        val = val.replace(/\s/g, ' ');
-        desc.innerHTML = val;
-    }
-</script>
 </head>
 
 <body>
@@ -39,7 +29,7 @@
         <ul id="menu">
           <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
           <li class="selected"><a href="/">主页</a></li>
-          <li><a href="/new/">发表</a></li>
+          <li><a href="">列表</a></li>
           <li><a href="">Github</a></li>
           <li><a href="">关于</a></li>
 		    {% if current_user.is_authenticated %}
@@ -54,36 +44,26 @@
     </div>
 	<div class="inner_copyright">Powered by Study Python Webapp. </div>
     <div id="site_content">
-      <div id="content">
-	    {% block content %}
-        <h3 align="center">{{ detail.title }}</h3>
-        <h4 align="center"> 作者:{{ detail.author }} </h4>
-        <h4 align="center">发布时间： {{ detail.create_time }} </h4><br><br>
-        <p style="white-space:pre-wrap;word-wrap: break-word;">{{ detail.post }} </p><hr />
-        <h3 align="center">评论区</h3>
-        <ol reversed>
-        {% for comment in comment_list %}        
-        <li><h4 > {{ comment.name }}:  </h4></li>
-        <p style="white-space:pre-wrap;word-wrap: break-word;">{{ comment.content }}</p>
-        <p align="right"> 评论时间: {{ comment.create_time }}</p>
-        {% else %}
-        <p align="center">  暂时还没有评论，一起来交流评论吧！ </p>
-        {% endfor %}
-        </ol>
-        {% if current_user.is_authenticated %}
-        <form action="/detail/{{ detail.id }}/" method="post">
-         评论:<br>
-          <textarea id="txt" name="content" rows="13" cols="80" minlength="2" required></textarea><br><br>
-          <input type="submit" value="发表评论">
-        </form>
-        {% else %}
-        <p align="center"><a href="/login/">登录</a>即可发表评论！</p>
-        {% endif %}
+	  {% block content %}
+      <div style="width:50px;height:200px;left:200px;">
+      <form action="/edit/{{ data.id }}/" method="post">
+      标题：<br>
+        <input type="text" name="title" style="width:545px;height:30px" minlength="2" value="{{ data.title }}" required/><br><br><br><br>
+       正文:<br>
+        <textarea name="content" rows="23" cols="76" minlength="15" required>{{ data.post }}</textarea><br><br>
+        <input type="submit" value="提交">
+         </form>
+        </div>
 	    {% endblock %}
-      </div>
       <div class="sidebar">
         <!-- insert your sidebar items here -->
         <h3>最新动态</h3>
+           {% for message in get_flashed_messages() %}<br>
+            <p style="text-align:center;color:green">{{ message }}</p>
+            {% endfor %}
+		  {% for post in post_list %}
+		  <p>{{ post.author }} 于 {{post.create_time}} 发表了 {{ post.tile }}。<p/><br>
+		  {% endfor %}
 		<h3>友情链接</h3>
         <ul>
           <li><a href="https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000" target="_blak">Python学习</a></li>

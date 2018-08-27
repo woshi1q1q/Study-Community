@@ -90,3 +90,43 @@ def mypage():
 @app.route('/about/')
 def about():
     return render_template('about.html')
+    
+@app.route('/delete/info/<int:id>/')   
+@login_required
+def delete_post_info(id):
+    post_list = Post.query.order_by(-Post.create_time).all()
+    data = Post.query.filter(Post.id==id).first()
+    return render_template('delete_info.html',post_list=post_list,data=data)
+    
+@app.route('/delete/<int:id>/')   
+@login_required
+def delete_post(id):    
+    data = Post.query.filter(Post.id==id).first()
+    if current_user == data.author:
+        db.session.delete(data)
+        db.session.commit()
+        flash('删除成功！')        
+    else:
+        flash('删除失败！')
+        flash('原因:身份验证不成功！')
+    return redirect(url_for('mypage'))
+    
+@app.route('/edit/<int:id>/',methods=['GET','POST'])
+@login_required
+def edit_post(id):
+    post_list = Post.query.order_by(-Post.create_time).all()
+    data = Post.query.filter(Post.id==id).first()
+    if data != None and current_user == data.author:
+        if request.method == 'POST':
+            title = request.form['title']
+            post = request.form['content']
+            data.title = title
+            data.post = post
+            db.session.commit()
+            flash('修改成功！')
+            return redirect('mypage')
+        return render_template('edit_post.html',post_list=post_list,data=data)      
+    else:
+        flash('请求参数有误！')
+        return redirect(url_for('mypage'))
+        
