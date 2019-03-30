@@ -1,13 +1,19 @@
 from app import app,db
-from flask import request,render_template,redirect,url_for,flash
+from flask import request,render_template,redirect,url_for,flash,Response
 from app.models import User,Post,Comment
-from flask.ext.login import login_required, login_user, logout_user,current_user
+from flask_login import login_required, login_user, logout_user,current_user
+import os
+from datetime import datetime
+from flask import jsonify
 
-
-@app.route('/')
-def home():
+@app.route('/',methods=['GET','POST'])
+@app.route('/page/<int:page>/',methods=['GET','POST'])
+def home(page=1):
+    posts = Post.query.order_by(-Post.create_time).paginate(page,10,False)
     post_list = Post.query.order_by(-Post.create_time).all()
-    return render_template('home.html',post_list=post_list)
+    if request.method == 'POST':
+        return redirect(url_for('home',page=request.form['page_num']))
+    return render_template('home.html',post_list=post_list,posts=posts)
 
 
 
@@ -129,4 +135,33 @@ def edit_post(id):
     else:
         flash('请求参数有误！')
         return redirect(url_for('mypage'))
-        
+             
+# 图片上传处理
+@app.route('/upload/',methods=['POST'])
+def upload():
+    file=request.files.get('editormd-image-file')
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    if not file:
+        res={
+            'success':0,
+            'message':u'图片格式异常'
+        }
+    else:
+        path = basedir+'/static/uploads/'
+        ex=os.path.splitext(file.filename)[1]
+        filename=datetime.now().strftime('%Y%m%d%H%M%S')+ex
+        file.save(path+filename)
+        #返回
+        res={
+            'success':1,
+            'message':u'图片上传成功',
+            'url':url_for('image',name=filename)
+        }
+    return jsonify(res)
+
+#编辑器上传图片处理
+@app.route('/image/<name>')
+def image(name):
+    with open(os.path.join(os.path.abspath('.')+'/app/static/uploads',name),'rb') as f:
+        resp=Response(f.read(),mimetype="image/jpeg")
+    return resp

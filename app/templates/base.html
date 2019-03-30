@@ -10,6 +10,8 @@
   <meta name="keywords" content="website keywords, website keywords" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <link rel="stylesheet" type="text/css" href="/static/css/style1.css" title="style" />
+
+
 </head>
 
 <body>
@@ -25,21 +27,19 @@
       <div id="menubar">
         <ul id="menu">
           <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
-          <li class="selected"><a href="/">主页</a></li>
+          <li ><a href="/">主页</a></li>
           <li><a href="/new/">发表</a></li>
           <li><a href="https://github.com/woshi1q1q/Study-Community" target="_blank">Github</a></li>
           <li><a href="/about/">关于</a></li>
-          <span style="float:">
+
           {% if current_user.is_authenticated %}
-          
-          <li><a href="/mypage/"> {{ current_user.username }}</a></li>
+          <li ><a href="/mypage/"> {{ current_user.username }}</a></li>
 		  <li><a href="/logout/">退出</a></li>
 		  {% else %}
 		  <li><a href="/login/">登录</a></li>
 		  <li><a href="/reg/">注册</a></li>
-          
+
 		  {% endif %}
-          <span>
         </ul>	 	
       </div>
     </div>

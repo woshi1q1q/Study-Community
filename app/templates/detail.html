@@ -23,6 +23,7 @@
         desc.innerHTML = val;
     }
 </script>
+
 </head>
 
 <body>
@@ -56,15 +57,17 @@
     <div id="site_content">
       <div id="content">
 	    {% block content %}
-        <h3 align="center">{{ detail.title }}</h3>
+        <h1 align="center">{{ detail.title }}</h1>
         <h4 align="center"> 作者:{{ detail.author }} </h4>
         <h4 align="center">发布时间： {{ detail.create_time }} </h4><br><br>
-        <p style="white-space:pre-wrap;word-wrap: break-word;">{{ detail.post }} </p><hr />
+        <div class="article">{{ detail.body_html | safe }} </div>
+        <br>
+        <hr />
         <h3 align="center">评论区</h3>
         <ol reversed>
         {% for comment in comment_list %}        
         <li><h4 > {{ comment.name }}:  </h4></li>
-        <p style="white-space:pre-wrap;word-wrap: break-word;">{{ comment.content }}</p>
+        <div class="article">{{ comment.body_html |safe }}</div><br>
         <p align="right"> 评论时间: {{ comment.create_time }}</p>
         {% else %}
         <p align="center">  暂时还没有评论，一起来交流评论吧！ </p>
@@ -73,7 +76,7 @@
         {% if current_user.is_authenticated %}
         <form action="/detail/{{ detail.id }}/" method="post">
          评论:<br>
-          <textarea id="txt" name="content" rows="13" cols="80" minlength="2" required></textarea><br><br>
+          <textarea id="txt" name="content" rows="13" style="width:100%" minlength="2" required></textarea><br><br>
           <input type="submit" value="发表评论">
         </form>
         {% else %}

@@ -45,15 +45,22 @@
     <div id="site_content">   
 	  {% block content %}
         <ol>
-	    {% for post in post_list %}
-        
-		<h3><li><a href="/detail/{{ post.id }}">{{ post.title }}</a></li></h3>
-        
+	    {% for post in posts.items %}        
+		<h3><li><a href="/detail/{{ post.id }}">{{ post.title }}</a></li></h3>     
 		<p>{{ post.author.username }}/{{ post.create_time }}</p>
 		{% else %}
 		<h3>暂无发帖！<h3>
 		{% endfor %}
         </ol>
+      {% if posts.has_prev %}
+      <a href="{{ url_for('home',page=posts.prev_num) }}"> << 上一页 </a>
+      {% endif %}
+      {% if posts.has_next %}
+      <a href="{{ url_for('home',page=posts.next_num) }}">  下一页 >> </a>
+      {% endif %}<br />
+      当前:{{ posts.page }}/{{ posts.pages }}页,共{{ posts.total }}篇文章
+      <form action="/" method="post">
+      跳转至第:<input name="page_num" type="number" min="1" max="{{ posts.pages }}" value="{{ posts.page }}">页<input type="submit" value="跳转">
 	  {% endblock %}
       <div class="sidebar">
         <!-- insert your sidebar items here -->
